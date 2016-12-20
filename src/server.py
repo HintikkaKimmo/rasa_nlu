@@ -183,7 +183,7 @@ class RasaRequestHandler(BaseHTTPRequestHandler):
             if self.path.startswith("/parse"):
                 parsed_path = urllib.parse.urlparse(urllib.parse.unquote(self.path))
                 data = urllib.parse.parse_qs(parsed_path.query)
-                self.wfile.write(self.get_response(data))
+                self.wfile.write(self.get_response(data).encode('utf-8'))
             elif self.path.startswith("/status"):
                 response = self.data_router.get_status()
                 self.wfile.write(response)
