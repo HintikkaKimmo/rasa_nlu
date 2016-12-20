@@ -34,10 +34,10 @@ class RasaNLUConfig(object):
             self.override(env_config)
 
         if cmdline_args is not None:
-            cmdline_config = {k: v for k, v in list(cmdline_args.items()) if v is not None}
+            cmdline_config = {k: v for k, v in cmdline_args.items() if v is not None}
             self.override(cmdline_config)
 
-        for key, value in list(self.items()):
+        for key, value in self.items():
             setattr(self, key, value)
 
         self.validate()
@@ -58,13 +58,13 @@ class RasaNLUConfig(object):
         return len(self.__dict__)
 
     def items(self):
-        return list(self.__dict__.items())
+        return self.__dict__.items()
 
     def view(self):
         return json.dumps(self.__dict__, indent=4)
 
     def format_env_vars(self, env_vars):
-        keys = [key for key in list(env_vars.keys()) if "RASA" in key]
+        keys = [key for key in env_vars.keys() if "RASA" in key]
         return {key.split('RASA_')[1].lower(): env_vars[key] for key in keys}
 
     def is_set(self, key):

@@ -1,4 +1,4 @@
-from http.server import BaseHTTPRequestHandler, HTTPServer
+from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 from rasa_nlu.visualization import create_html
 from rasa_nlu.training_data import TrainingData
 import sys

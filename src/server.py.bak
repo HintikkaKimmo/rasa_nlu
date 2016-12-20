@@ -1,12 +1,12 @@
 import argparse
 import json
 import os
-import urllib.parse
+import url
 import multiprocessing
 import glob
 import warnings
 import logging
-from http.server import BaseHTTPRequestHandler, HTTPServer
+from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 from rasa_nlu.train import do_train
 from rasa_nlu.config import RasaNLUConfig
 
@@ -42,15 +42,15 @@ class RasaNLUServer(object):
             backend = metadata["backend"]
 
         if backend is None:
-            from .interpreters.simple_interpreter import HelloGoodbyeInterpreter
+            from interpreters.simple_interpreter import HelloGoodbyeInterpreter
             return HelloGoodbyeInterpreter()
         elif backend.lower() == 'mitie':
             logging.info("using mitie backend")
-            from .interpreters.mitie_interpreter import MITIEInterpreter
+            from interpreters.mitie_interpreter import MITIEInterpreter
             return MITIEInterpreter(**metadata)
         elif backend.lower() == 'spacy_sklearn':
             logging.info("using spacy + sklearn backend")
-            from .interpreters.spacy_sklearn_interpreter import SpacySklearnInterpreter
+            from interpreters.spacy_sklearn_interpreter import SpacySklearnInterpreter
             return SpacySklearnInterpreter(**metadata)
         else:
             raise ValueError("unknown backend : {0}".format(backend))
@@ -58,16 +58,16 @@ class RasaNLUServer(object):
     def __create_emulator(self):
         mode = self.config.emulate
         if mode is None:
-            from .emulators import NoEmulator
+            from emulators import NoEmulator
             return NoEmulator()
         elif mode.lower() == 'wit':
-            from .emulators.wit import WitEmulator
+            from emulators.wit import WitEmulator
             return WitEmulator()
         elif mode.lower() == 'luis':
-            from .emulators.luis import LUISEmulator
+            from emulators.luis import LUISEmulator
             return LUISEmulator()
         elif mode.lower() == 'api':
-            from .emulators.api import ApiEmulator
+            from emulators.api import ApiEmulator
             return ApiEmulator()
         else:
             raise ValueError("unknown mode : {0}".format(mode))
@@ -131,8 +131,8 @@ class DataRouter(object):
         if self.token is None:
             return True
         else:
-            parsed_path = urllib.parse.urlparse(path)
-            data = urllib.parse_qs(parsed_path.query)
+            parsed_path = urlparse.urlparse(path)
+            data = urlparse.parse_qs(parsed_path.query)
             valid = ("token" in data and data["token"][0] == self.token)
             return valid
 
@@ -145,7 +145,7 @@ class DataRouter(object):
         fname = 'tmp_training_data.json'
         with open(fname, 'w') as f:
             f.write(data)
-        _config = dict(list(self.config.items()))
+        _config = dict(self.config.items())
         _config["data"] = fname
         train_config = RasaNLUConfig(cmdline_args=_config)
 
@@ -169,7 +169,7 @@ class RasaRequestHandler(BaseHTTPRequestHandler):
         self.wfile.write("unauthorized")
 
     def get_response(self, data_dict):
-        if 'q' not in data_dict:
+        if u'q' not in data_dict:
             return json.dumps({"error": "Invalid parse parameter specified"})
 
         data = self.data_router.extract(data_dict)
@@ -181,8 +181,8 @@ class RasaRequestHandler(BaseHTTPRequestHandler):
         if self.data_router.auth(self.path):
             self._set_headers()
             if self.path.startswith("/parse"):
-                parsed_path = urllib.parse.urlparse(urllib.parse.unquote(self.path).decode('utf-8'))
-                data = urllib.parse_qs(parsed_path.query)
+                parsed_path = urlparse.urlparse(urlparse.unquote(self.path).decode('utf-8'))
+                data = urlparse.parse_qs(parsed_path.query)
                 self.wfile.write(self.get_response(data))
             elif self.path.startswith("/status"):
                 response = self.data_router.get_status()
@@ -237,9 +237,9 @@ def create_argparser():
 
 if __name__ == "__main__":
     parser = create_argparser()
-    cmdline_args = {key: val for key, val in list(vars(parser.parse_args()).items()) if val is not None}
+    cmdline_args = {key: val for key, val in vars(parser.parse_args()).items() if val is not None}
     config = RasaNLUConfig(cmdline_args.get("config"), os.environ, cmdline_args)
-    print((config.view()))
+    print(config.view())
     logging.basicConfig(filename=config.log_file, level=config.log_level)
     logging.captureWarnings(True)
     logging.debug(config.view())

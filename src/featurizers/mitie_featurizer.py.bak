@@ -1,7 +1,7 @@
 from mitie import *
-import urllib.request, urllib.error, urllib.parse
+import urllib2
 import os
-import http.client
+import httplib
 import multiprocessing
 import progressbar
 import logging
@@ -19,10 +19,10 @@ class MITIEFeaturizer(object):
     def download_fe_file(self, fe_file):
         logging.debug("DOWNLOADING MITIE FILE")
         chunk_size = 30000000
-        _fe_file = urllib.request.urlopen("https://s3-eu-west-1.amazonaws.com/mitie/total_word_feature_extractor.dat")
+        _fe_file = urllib2.urlopen("https://s3-eu-west-1.amazonaws.com/mitie/total_word_feature_extractor.dat")
         _file_meta = _fe_file.info()
         file_size = int(_file_meta.getheaders("Content-Length")[0])
-        print("Downloading: %s (%s MB)" % (fe_file, file_size/1024/1024))
+        print "Downloading: %s (%s MB)" % (fe_file, file_size/1024/1024)
         widgets = ['Progress: ',
                    progressbar.Percentage(),
                    ' ',

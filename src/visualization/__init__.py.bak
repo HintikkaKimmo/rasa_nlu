@@ -19,8 +19,8 @@ def create_css(entity_examples):
     for example in entity_examples:
         for entity in example["entities"]:
             entity_types.add(entity["entity"])
-    entity_specs = "\n".join([entity_spec(name, *next(colors)) for name in entity_types])
-    return """
+    entity_specs = u"\n".join([entity_spec(name, *next(colors)) for name in entity_types])
+    return u"""
     <style media="screen" type="text/css">
     .entities {{
         line-height: 3;
@@ -51,7 +51,7 @@ def create_css(entity_examples):
 
 
 def html_wrapper():
-    return """
+    return u"""
 <!DOCTYPE html>
 <html>
   <head>
@@ -68,8 +68,8 @@ def format_example(example):
     text = example["text"]
     inserts = []
     for entity in example["entities"]:
-        inserts.append((entity["start"], """<mark data-entity="{0}">""".format(entity["entity"])))
-        inserts.append((entity["end"], "</mark>"))
+        inserts.append((entity["start"], u"""<mark data-entity="{0}">""".format(entity["entity"])))
+        inserts.append((entity["end"], u"</mark>"))
 
     inserts = sorted(inserts, key=lambda i: i[0])
     chunks = []
@@ -79,12 +79,12 @@ def format_example(example):
         chunks.append(ins[1])
         end = ins[0]
     chunks.append(text[end:])
-    return """<div class="entities">{0}</div>""".format("".join(chunks))
+    return u"""<div class="entities">{0}</div>""".format(u"".join(chunks))
 
 
 def intent_group(examples):
-    content = "<h4>{0}</h4>".format(examples[0]["intent"])
-    content += "".join([format_example(example) for example in examples])
+    content = u"<h4>{0}</h4>".format(examples[0]["intent"])
+    content += u"".join([format_example(example) for example in examples])
     return content
 
 
@@ -99,7 +99,7 @@ def create_html(training_data):
     for _, group in groupby(examples, lambda e: e["intent"]):
         intentgroups.append(list(group))
 
-    body = "".join([intent_group(g) for g in intentgroups])
+    body = u"".join([intent_group(g) for g in intentgroups])
     head = create_css(examples)
     template = html_wrapper()
     return template.format(head=head, body=body)

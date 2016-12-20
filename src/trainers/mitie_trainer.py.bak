@@ -2,18 +2,22 @@ from mitie import *
 import os
 import datetime
 import json
-from .training_utils import write_training_metadata
+
+from rasa_nlu.trainers.trainer import Trainer
+from training_utils import write_training_metadata
 
 
-class MITIESklearnTrainer(object):
-    def __init__(self, config):
+class MITIETrainer(Trainer):
+    SUPPORTED_LANGUAGES = {"en"}
+
+    def __init__(self, fe_file, language_name):
         self.name = "mitie"
         self.training_data = None
         self.intent_classifier = None
         self.entity_extractor = None
         self.training_data = None
-        self.fe_file = config.mitie_file
-        self.feature_extractor = total_word_feature_extractor(self.fe_file)
+        self.fe_file = fe_file
+        self.ensure_language_support(language_name)
 
     def train(self, data):
         self.training_data = data
@@ -36,14 +40,14 @@ class MITIESklearnTrainer(object):
                 _slice = example["text"][ent["start"]:ent["end"] + 1]
                 val_tokens = tokenize(_slice)
                 start, end = self.start_and_end(tokens, val_tokens)
-                sample.add_entity(range(start, end), ent["entity"])
+                sample.add_entity(xrange(start, end), ent["entity"])
             trainer.add(sample)
 
         ner = trainer.train()
         return ner
 
     def train_intent_classifier(self, intent_examples):
-        trainer = sklearn_text_categorizer_trainer(self.fe_file)
+        trainer = text_categorizer_trainer(self.fe_file)
         for example in intent_examples:
             tokens = tokenize(example["text"])
             trainer.add_labeled_text(tokens, example["intent"])

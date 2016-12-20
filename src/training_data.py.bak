@@ -97,7 +97,7 @@ class TrainingData(object):
             entities = []
             for e in s.get("entities") or []:
                 i, ii = e["startPos"], e["endPos"] + 1
-                _regex = "\s*".join([re.escape(s) for s in tokens[i:ii]])
+                _regex = u"\s*".join([re.escape(s) for s in tokens[i:ii]])
                 expr = re.compile(_regex)
                 m = expr.search(text)
                 start, end = m.start(), m.end()
@@ -116,10 +116,10 @@ class TrainingData(object):
 
             intent = data.get("name")
             for s in data["userSays"]:
-                text = "".join([chunk["text"] for chunk in s.get("data")])
+                text = "".join(map(lambda chunk: chunk["text"], s.get("data")))
                 # add entities to each token, if available
                 entities = []
-                for e in [chunk for chunk in s.get("data") if "alias" in chunk or "meta" in chunk]:
+                for e in filter(lambda chunk: "alias" in chunk or "meta" in chunk, s.get("data")):
                     start = text.find(e["text"])
                     end = start + len(e["text"])
                     val = text[start:end]

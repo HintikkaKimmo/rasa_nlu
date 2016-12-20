@@ -1,6 +1,6 @@
 import argparse
-from .training_data import TrainingData
-from .config import RasaNLUConfig
+from training_data import TrainingData
+from config import RasaNLUConfig
 import json
 import warnings
 import os
@@ -25,10 +25,10 @@ def create_argparser():
 def create_trainer(config):
     backend = config.backend.lower()
     if backend == 'mitie':
-        from .trainers.mitie_trainer import MITIETrainer
+        from trainers.mitie_trainer import MITIETrainer
         return MITIETrainer(config.mitie_file, config.language)
     if backend == 'spacy_sklearn':
-        from .trainers.spacy_sklearn_trainer import SpacySklearnTrainer
+        from trainers.spacy_sklearn_trainer import SpacySklearnTrainer
         return SpacySklearnTrainer(config, config.language)
     else:
         raise NotImplementedError("other backend trainers not implemented yet")

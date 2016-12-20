@@ -4,7 +4,7 @@ import datetime
 import json
 
 from rasa_nlu.trainers.trainer import Trainer
-from training_utils import write_training_metadata
+from .training_utils import write_training_metadata
 
 
 class MITIETrainer(Trainer):
@@ -40,7 +40,7 @@ class MITIETrainer(Trainer):
                 _slice = example["text"][ent["start"]:ent["end"] + 1]
                 val_tokens = tokenize(_slice)
                 start, end = self.start_and_end(tokens, val_tokens)
-                sample.add_entity(xrange(start, end), ent["entity"])
+                sample.add_entity(range(start, end), ent["entity"])
             trainer.add(sample)
 
         ner = trainer.train()
