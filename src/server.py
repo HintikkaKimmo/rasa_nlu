@@ -132,7 +132,7 @@ class DataRouter(object):
             return True
         else:
             parsed_path = urllib.parse.urlparse(path)
-            data = urllib.parse_qs(parsed_path.query)
+            data = urllib.parse.parse_qs(parsed_path.query)
             valid = ("token" in data and data["token"][0] == self.token)
             return valid
 
@@ -181,8 +181,8 @@ class RasaRequestHandler(BaseHTTPRequestHandler):
         if self.data_router.auth(self.path):
             self._set_headers()
             if self.path.startswith("/parse"):
-                parsed_path = urllib.parse.urlparse(urllib.parse.unquote(self.path).decode('utf-8'))
-                data = urllib.parse_qs(parsed_path.query)
+                parsed_path = urllib.parse.urlparse(urllib.parse.unquote(self.path))
+                data = urllib.parse.parse_qs(parsed_path.query)
                 self.wfile.write(self.get_response(data))
             elif self.path.startswith("/status"):
                 response = self.data_router.get_status()
