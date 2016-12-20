@@ -7,4 +7,4 @@ cloudpickle
 boto3
 pytest-pep8
 requests
-progressbar
+progressbar2
