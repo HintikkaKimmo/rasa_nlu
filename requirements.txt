@@ -8,3 +8,4 @@ boto3
 pytest-pep8
 requests
 progressbar2
+ujson>=5.4.0 # not directly required, pinned by Snyk to avoid a vulnerability
