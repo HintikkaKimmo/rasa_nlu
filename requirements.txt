@@ -8,3 +8,4 @@ boto3
 pytest-pep8
 requests
 progressbar2
+zipp>=3.19.1 # not directly required, pinned by Snyk to avoid a vulnerability
